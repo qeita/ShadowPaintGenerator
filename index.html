@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Shadow Paint Generator</title>
+    <meta name="description" content="This tool is that the pixel graphic you illustrated is converted to css style with box-shadow and color.">
+    <meta name="keywords" content="css,pixel,dot,box-shadow,color">
+    <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/reset.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+  </head>
+  <body>
+
+    <main
+      id="app"
+      @dragover="prevent"
+      @drop="prevent"
+    >
+      <div id="ui">
+        <ul class="cat">
+          <li class="cat_item">
+            <button
+              class="btn"
+              :class="currentMode === 'paint'? 'current': ''"
+              @click="setMode"
+              data-mode="paint"
+            >Paint</button>
+          </li>
+
+          <li class="cat_item">
+            <button
+              class="btn"
+              :class="currentMode === 'capture'? 'current': ''"
+              @click="setMode"
+              data-mode="capture"
+            >Capture</button>
+          </li>
+        </ul>
+
+
+        <div class="menu" v-show="currentMode === 'paint'">
+          <p class="txt">Type:</p>
+          <div class="menu_item menu_col">
+            <label for="pen" class="icon" :class="draw.type === 1? 'current': ''">
+              <svg version="1.1" id="_x31_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve">
+                <g>
+                  <path class="st0" d="M382.543,129.457l-53.07-53.07c-2.258-2.258-5.922-2.258-8.184,0L159.734,237.945L31.413,366.266
+                    L0.191,503.004c-1.207,5.286,3.519,10.016,8.805,8.805l136.738-31.222l128.32-128.321L435.613,190.71
+                    c2.258-2.262,2.258-5.926,0-8.183L382.543,129.457z M252.129,330.34l-63.398,63.402l-37.969,37.828l-6.078-42.332l226.895-226.891
+                    l24.274,24.27L252.129,330.34z M57.949,389.336l56.59,8.125l8.125,56.586l-53.742,12.274l-23.242-23.246L57.949,389.336z
+                     M80.394,361.137L181.66,259.871l143.723-143.723l24.27,24.27L122.757,367.313l-26.625-3.821L80.394,361.137z"></path>
+                  <path class="st0" d="M505.914,90.902l-84.817-84.82c-8.113-8.11-21.386-8.11-29.504,0.004L347.789,49.89
+                    c-2.273,2.274-2.273,5.996,0,8.27l106.055,106.05c2.274,2.274,5.992,2.274,8.266,0l43.805-43.805
+                    C514.028,112.289,514.028,99.015,505.914,90.902z"></path>
+                </g>
+              </svg>              
+            </label>
+            <input id="pen" type="radio" name="drawType" value="1" checked @change="changeDrawType(1)">
+
+            <label for="eraser" class="icon" :class="draw.type === 0? 'current': ''">
+              <svg version="1.1" id="_x31_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve">
+                <g>
+                  <path class="st0" d="M387.68,0H124.242c-5.441,0-9.922,4.481-9.922,10v139.121H397.68V10C397.68,4.481,393.2,0,387.68,0z"></path>
+                  <path class="st0" d="M114.32,502.082c0,5.437,4.481,9.918,9.922,9.918H387.68c5.52,0,10-4.481,10-9.918V203.84H114.32V502.082z"></path>
+                </g>
+              </svg>
+            </label>
+            <input id="eraser" type="radio" name="drawType" value="0" @change="changeDrawType(0)">
+
+            <label for="dropper" class="icon" :class="draw.type === 2? 'current': ''">
+              <svg version="1.1" id="_x31_0" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" xml:space="preserve">
+                <g>
+                  <path class="st0" d="M189.088,384.924l69.162-69.139l49.335-49.166h-0.16l0.16-0.157H183.329l-56.351,56.352l-19.09,72.642
+                    l-76.773,76.772l4.046,4.05c0.007,0.121,0.05,0.238,0.144,0.32c0.09,0.086,0.199,0.117,0.309,0.129l3.81,3.81l76.335-76.335
+                    L189.088,384.924z"></path>
+                  <path class="st0" d="M510.169,58.322c-2.788-13.958-9.637-26.68-19.774-36.816C480.259,11.369,467.537,4.552,453.61,1.733
+                    c-32.467-6.524-57.117,5.202-80.033,38.106l-56.504,84.035c-0.145,0.234-0.32,0.437-0.496,0.617c0,0.027-0.031,0.027-0.031,0.058
+                    c-2.265,2.378-5.966,2.526-8.254,0.234l-18.629-18.629c-12.546-12.546-32.818-14.252-46.512-2.909
+                    c-6.524,5.376-10.429,12.604-11.811,20.186c-1.91,10.636,1.175,22.034,9.402,30.234l2.761,2.761L98.685,301.248l-3.382,3.378
+                    l-1.202,4.615l-20.686,78.682l-62.286,62.29c-13.166,13.162-14.955,34.435-3.085,48.773c13.63,16.454,38.163,17.306,52.915,2.558
+                    l63.052-63.056l78.654-20.655l4.611-1.202l3.378-3.382L355.475,268.43l2.765,2.761c1.554,1.558,3.26,2.878,5.084,3.994
+                    c13.721,8.551,33.759,5.408,43.158-3.994c10.636-10.636,13.283-34.934,0-48.246l-19.332-19.304
+                    c-2.319-2.319-2.143-6.021,0.234-8.254c0-0.031,0.031-0.031,0.031-0.058c0.203-0.176,0.41-0.352,0.617-0.5l83.883-56.414
+                    C504.296,117.556,516.81,91.348,510.169,58.322z M454.813,31.873c0.828,0.683,1.605,1.418,2.249,2.249
+                    c0.039,0.051,0.066,0.114,0.106,0.164c0.683,0.91,1.269,1.894,1.702,2.968c3.616,9.05-3.494,20.421-15.923,25.387
+                    c-9.156,3.678-18.602,2.835-24.403-1.46c-0.203-0.148-0.402-0.305-0.594-0.461c-0.84-0.687-1.617-1.429-2.265-2.269
+                    c-0.035-0.038-0.055-0.09-0.086-0.129c-0.69-0.918-1.277-1.909-1.71-2.998c-3.643-9.047,3.494-20.422,15.922-25.384
+                    c9.149-3.678,18.566-2.834,24.373,1.445C454.399,31.545,454.605,31.705,454.813,31.873z M22.849,489.083
+                    c-7.083-7.082-7.083-18.57,0-25.649l66.402-66.434l21.89-83.266l144.822-144.822l87.058,87.058l-144.822,144.79l-83.297,21.89
+                    l-66.402,66.433C41.42,496.162,29.932,496.162,22.849,489.083z"></path>
+                </g>
+              </svg>              
+            </label>
+            <input id="dropper" type="radio" name="drawType" value="2" @change="changeDrawType(2)">
+          </div>
+
+          <p class="txt">Color:</p>
+          <div class="menu_item menu_col">
+            <input class="color" type="color" :value="draw.color" ref="color" @change="changeColor">
+            <input type="text" class="color_code" :value="draw.color" readonly @change="changeColor">
+          </div>
+
+          <div class="menu_item menu_col">
+            <label for="col" class="label">Col:&nbsp;</label>
+            <input id="col" class="input" type="number" min="2" max="40" :value="cell.col" data-cell="col" @change="updateSize">
+          </div>
+    
+          <div class="menu_item menu_col">
+            <label for="row" class="label">Row:&nbsp;</label>
+            <input id="row" class="input" type="number" min="2" max="40" :value="cell.row" data-cell="row" @change="updateSize">
+          </div>
+  
+          <div class="menu_item menu_col">
+            <label for="size" class="label">Size:&nbsp;</label>
+            <input id="size" class="input" type="number" min="2" max="20" :value="cell.size" data-cell="size" @change="updateSize">
+          </div>  
+
+          <div class="menu_item menu_item_mt">
+            <a
+              class="btn"
+              @click="download"
+              ref="download"
+              href=""
+              target="_blank"
+            >Download</a>
+          </div>
+
+          <div class="menu_item">
+            <button
+              class="btn"
+              @click="convertCSS"
+            >Convert CSS</button>
+          </div>
+        </div>
+
+        <div class="menu" v-show="currentMode === 'capture'">
+          <div class="menu_item menu_col">
+            <label for="col" class="label">Col:&nbsp;</label>
+            <input id="col" class="input" type="number" min="2" max="40" :value="cell.col" data-cell="col" @change="updateSize">
+          </div>
+    
+          <div class="menu_item menu_col">
+            <label for="row" class="label">Row:&nbsp;</label>
+            <input id="row" class="input" type="number" min="2" max="40" :value="cell.row" data-cell="row" @change="updateSize">
+          </div>
+  
+          <div class="menu_item menu_col">
+            <label for="size" class="label">Size:&nbsp;</label>
+            <input id="size" class="input" type="number" min="2" max="20" :value="cell.size" data-cell="size" @change="updateSize">
+          </div>  
+
+          <div class="menu_item menu_item_mt">
+            <form enctype="multipart/form-data" method="post">
+              <input id="upload" type="file" accept="image/*" @change="upload">
+              <label
+                for="upload"
+                class="btn btn_upload"
+                @dragover="prevent"
+                @drop="drop"
+              >Upload /<br>Drag & Drop</label>
+            </form>
+          </div>
+
+          <div class="menu_item">
+            <button
+              class="btn"
+              @click="convertCSS"
+            >Convert CSS</button>
+          </div>
+        </div>
+  
+      </div>
+
+      <div class="canvas_container" :style="canvasStyle">
+        <canvas
+          id="canvas"
+          ref="canvas"
+          :style="canvasStyle"
+          :width="cell.col * cell.size * devicePixel"
+          :height="cell.row * cell.size * devicePixel"
+          @mousedown="onHandleDown"
+          @mousemove="onHandleMove"
+          @mouseup="onHandleUp"
+          @mouseout="onHandleUp"
+          @dragover="prevent"
+          @drop="drop"
+        ></canvas>
+  
+        <canvas
+          id="guide"
+          ref="guide"
+          :style="canvasStyle"
+          :width="cell.col * cell.size"
+          :height="cell.row * cell.size"
+        ></canvas>
+      </div>
+
+      <div id="modal" v-if="styles.boxShadow">
+        <div class="modal_bg" @click="clear"></div>
+        <div class="modal_content">
+          <p class="modal_text">Please make &lt;div&gt; tag, and copy below code and paste in your code.</p>
+          <textarea class="modal_textarea" readonly>{{ textAreaText.replace(/          |       /g, '') }}</textarea>
+
+          <div class="preview">
+            <div class="preview_box" :style="previewBoxStyle">
+              <div class="preview_shadow" :style="previewShadowStyle">
+              </div>  
+            </div>
+          </div>
+          <p class="preview_text">[ preview ]</p>
+        </div>
+      </div>
+    </main>
+
+    <script src="./assets/js/libs/vue.min.js"></script>
+    <script src="./assets/js/app.js"></script>
+  </body>
+</html>

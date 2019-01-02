@@ -141,6 +141,7 @@
       },
 
       onHandleDown(e) {
+        if(this.currentMode === 'capture') return
         this.draw.isDown = true
         if(this.draw.type === 2){
           this.getColor(e)
@@ -246,16 +247,13 @@
             const h = img.height
             const asp = w/h
             const _asp = this.canvas.width / this.canvas.height
-            console.log(asp, _asp)
             if(asp <= _asp){
               // 縦長
-              console.log(parseInt(w * this.canvas.height / h, 10),this.canvas.height)
               this.c.drawImage(img, 0, 0, parseInt(w * this.canvas.height / h, 10),this.canvas.height)
             }else{
               // 横長
               this.c.drawImage(img, 0, 0, this.canvas.width, parseInt(h * this.canvas.width / w, 10))
             }
-            // console.log(asp, _asp)
             this.pixelize()
           }
           img.src = dataUrl
@@ -293,13 +291,12 @@
                 const asp = w/h
                 const _asp = this.canvas.width / this.canvas.height
                 if(asp <= _asp){
-                  // 横長
-                  this.c.drawImage(img, 0, 0, this.canvas.width, parseInt(h * this.canvas.width / w, 10))
-                }else{
                   // 縦長
                   this.c.drawImage(img, 0, 0, parseInt(w * this.canvas.height / h, 10),this.canvas.height)
+                }else{
+                  // 横長
+                  this.c.drawImage(img, 0, 0, this.canvas.width, parseInt(h * this.canvas.width / w, 10))
                 }
-                // console.log(asp, _asp)
                 this.pixelize()
               }
               img.src = dataUrl
@@ -334,6 +331,7 @@
             setCellColor(x, y)
           }  
         }
+        this.changeDrawType(1)
       },
 
       /**
